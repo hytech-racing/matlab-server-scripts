@@ -32,4 +32,6 @@ jobs:
       - name: run matlab command
         uses: matlab-actions/run-command@v2
         with:
-          command: rand
+          command: compiler.build.productionServerArchive('./max_motor_temp.m')
+      - name: list files again
+        run: ls
