@@ -30,7 +30,7 @@ jobs:
         uses: matlab-actions/run-command@v2
         with:
           command: matlab.addons.toolbox.installToolbox("h5parser.mltbx")
-      - name: run matlab command
+      - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
           command: compiler.build.productionServerArchive('./max_motor_temp.m')
@@ -40,3 +40,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: "**/*.ctf"
+          tag: ${{ github.run_number }}
