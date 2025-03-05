@@ -18,7 +18,7 @@ jobs:
           fileName: h5parser.mltbx
           latest: true
       - name: list files
-        run: ls
+        run: ls -lah
       - name: pwd
         run: pwd
       - name: setup MATLAB
@@ -35,4 +35,8 @@ jobs:
         with:
           command: compiler.build.productionServerArchive('./max_motor_temp.m')
       - name: list files again
-        run: ls
+        run: "ls -lah **/*.ctf"
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "**/*.ctf"
