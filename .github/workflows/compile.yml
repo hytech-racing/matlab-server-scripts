@@ -1,6 +1,10 @@
 name: compile
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 env:
   MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_BATCH_TOKEN }}
@@ -17,10 +21,6 @@ jobs:
           repository: hytech-racing/h5parser
           fileName: h5parser.mltbx
           latest: true
-      - name: list files
-        run: ls -lah
-      - name: pwd
-        run: pwd
       - name: setup MATLAB
         uses: matlab-actions/setup-matlab@v2
         with:
@@ -34,7 +34,7 @@ jobs:
       - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
-          command: compiler.build.productionServerArchive('./max_motor_temp.m')
+          command: scripts = {dir("*.m").name}, compiled = compiler.build.productionServerArchive(scripts, 'ArchiveName', ['v' getenv('GITHUB_RUN_NUMBER')])
       - name: list files again
         run: "ls -lah **/*.ctf"
       - name: create release
