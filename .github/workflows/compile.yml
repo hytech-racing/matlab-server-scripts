@@ -47,7 +47,7 @@ jobs:
       - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
-          command: compiled = compiler.build.productionServerArchive(getenv('SCRIPTS'))
+          command: scripts = jsondecode(getenv("SCRIPTS")), archive = compiler.build.productionServerArchive(scripts)
       - name: list files again
         run: "ls -lah **/*.ctf"
       - name: create release
