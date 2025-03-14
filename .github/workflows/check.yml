@@ -1,4 +1,4 @@
-name: validate + test compile on all branch pushes
+name: validate and compile on all branch pushes
 
 on:
   push:
@@ -42,16 +42,8 @@ jobs:
       - name: get list of exported .m files
         run: |
           scripts=$(./get_scripts.sh)
-          echo $scripts
           echo "SCRIPTS=$scripts" >> $GITHUB_ENV
       - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
           command: scripts = jsondecode(getenv("SCRIPTS")), archive = compiler.build.productionServerArchive(scripts)
-      - name: list files again
-        run: "ls -lah **/*.ctf"
-      - name: create release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "**/*.ctf"
-          tag_name: v${{ github.run_number }}

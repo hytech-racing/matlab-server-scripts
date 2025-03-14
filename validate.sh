@@ -17,7 +17,6 @@ find . -name "exports.txt" | while read -r exports_file; do
 
         # Get the base name of .m file
         base_name=$(basename "$m_file" .m)
-				echo $base_name
 
 				# Check if the base name is already used
         if [[ -n "${script_names[$base_name]}" ]]; then
