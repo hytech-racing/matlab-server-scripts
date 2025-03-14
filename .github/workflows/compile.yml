@@ -1,16 +1,21 @@
-name: compile
+name: validate + test compile on all branch pushes
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
   MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_BATCH_TOKEN }}
 
 jobs:
-  compile:
+  validate-exports:
+    name: validate exports.txt
+    steps:
+      - name: check if all files listed in exports.txt exist
+        run: ./validate.sh
+
+  test-compile:
+    needs: validate_exports
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
@@ -31,10 +36,14 @@ jobs:
         uses: matlab-actions/run-command@v2
         with:
           command: matlab.addons.toolbox.installToolbox("h5parser.mltbx")
+      - name: get list of exported .m files
+        run: |
+          scripts=$(./get_scripts.sh)
+          echo "SCRIPTS=$scripts" >> $GITHUB_ENV
       - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
-          command: scripts = {dir("*.m").name}, compiled = compiler.build.productionServerArchive(scripts, 'ArchiveName', ['v' getenv('GITHUB_RUN_NUMBER')])
+          command: compiled = compiler.build.productionServerArchive(['v' getenv('SCRIPTS')])
       - name: list files again
         run: "ls -lah **/*.ctf"
       - name: create release
