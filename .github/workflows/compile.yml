@@ -42,11 +42,12 @@ jobs:
       - name: get list of exported .m files
         run: |
           scripts=$(./get_scripts.sh)
+          echo $scripts
           echo "SCRIPTS=$scripts" >> $GITHUB_ENV
       - name: compile scripts
         uses: matlab-actions/run-command@v2
         with:
-          command: compiled = compiler.build.productionServerArchive(['v' getenv('SCRIPTS')])
+          command: compiled = compiler.build.productionServerArchive(getenv('SCRIPTS'))
       - name: list files again
         run: "ls -lah **/*.ctf"
       - name: create release
