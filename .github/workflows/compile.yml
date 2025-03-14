@@ -12,6 +12,8 @@ jobs:
     name: validate exports.txt
     runs-on: ubuntu-latest
     steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
       - name: check if all files listed in exports.txt exist
         run: ./validate.sh
 
