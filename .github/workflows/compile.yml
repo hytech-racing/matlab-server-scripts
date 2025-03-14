@@ -10,12 +10,13 @@ env:
 jobs:
   validate-exports:
     name: validate exports.txt
+    runs-on: ubuntu-latest
     steps:
       - name: check if all files listed in exports.txt exist
         run: ./validate.sh
 
   test-compile:
-    needs: validate_exports
+    needs: validate-exports
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
