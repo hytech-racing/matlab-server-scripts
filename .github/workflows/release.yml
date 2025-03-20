@@ -1,11 +1,9 @@
 name: create release and deploy
 
 on:
-  push:
-    branches:
-      - main
   workflow_run:
     workflows: ["validate and compile on all branch pushes"]
+    branches: [main]
     types:
       - completed
   workflow_dispatch:
@@ -58,7 +56,7 @@ jobs:
       - name: get latest .ctf
         uses: robinraju/release-downloader@v1.11
         with:
-          repository: hytech-racing/h5parser
+          repository: hytech-racing/matlab-server-scripts
           fileName: '*.ctf'
           latest: true
       - name: set up wireguard connection
