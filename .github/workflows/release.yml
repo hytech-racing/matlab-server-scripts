@@ -1,0 +1,75 @@
+name: create release and deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["validate and compile on all branch pushes"]
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_BATCH_TOKEN }}
+
+jobs:
+  compile-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - name: get latest h5parser release
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: hytech-racing/h5parser
+          fileName: h5parser.mltbx
+          latest: true
+      - name: setup MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2024b
+          products: MATLAB_Compiler_SDK
+          cache: true
+      - name: install h5parser toolbox
+        uses: matlab-actions/run-command@v2
+        with:
+          command: matlab.addons.toolbox.installToolbox("h5parser.mltbx")
+      - name: get list of exported .m files
+        run: |
+          scripts=$(./get_scripts.sh)
+          echo "SCRIPTS=$scripts" >> $GITHUB_ENV
+      - name: generate function signatures
+        run: ./generate_function_signatures.sh
+      - name: compile scripts
+        uses: matlab-actions/run-command@v2
+        with:
+          command: scripts = jsondecode(getenv("SCRIPTS")), archive = compiler.build.productionServerArchive(scripts, 'ArchiveName', ['v' getenv('GITHUB_RUN_NUMBER')], 'FunctionSignatures', './signatures.json')
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "**/*.ctf"
+          tag_name: v${{ github.run_number }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: compile-and-release
+    steps:
+      - name: get latest .ctf
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: hytech-racing/h5parser
+          fileName: *.ctf
+          latest: true
+      - name: set up wireguard connection
+        uses: niklaskeerl/easy-wireguard-action@v2
+        with:
+          WG_CONFIG_FILE: ${{ secrets.WG_CONFIG_FILE }}
+      - name: set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: add mps to known hosts
+        run: ssh-keyscan -H ${{ secrets.MPS_SERVER_IP }} > ~/.ssh/known_hosts
+      - name: copy file to mps auto deploy directory
+        run: scp *.ctf ${{ secrets.MPS_SERVER_USERNAME }}@${{ secrets.MPS_SERVER_IP }}:${{ secrets.MPS_AUTODEPLOY_DIR }}
