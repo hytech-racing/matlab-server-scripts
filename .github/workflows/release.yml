@@ -70,4 +70,4 @@ jobs:
       - name: add mps to known hosts
         run: ssh-keyscan -H ${{ secrets.MPS_SERVER_IP }} > ~/.ssh/known_hosts
       - name: copy file to mps auto deploy directory
-        run: scp *.ctf ${{ secrets.MPS_SERVER_USERNAME }}@${{ secrets.MPS_SERVER_IP }}:${{ secrets.MPS_AUTODEPLOY_DIR }}
+        run: 'scp *.ctf ${{ secrets.MPS_SERVER_USERNAME }}@${{ secrets.MPS_SERVER_IP }}:${{ secrets.MPS_AUTODEPLOY_DIR }}'
