@@ -41,7 +41,7 @@ function result = critical_timestamps(filePath)
     end
 
     % Save the matrix to a MAT file using -v7.3 format for matfile support
-    save(fileLocation, signals, '-v7.3');
+    save(fileLocation, 'signals', '-v7.3');
 
     % Return
     result.type = 'mat';
