@@ -7,17 +7,17 @@ function result = meters_travelled(filePath)
     parsed = parse(filePath);
     
     % extract RPM data from parsed h5
-    FL = parsed.VehicleData.current_rpms.FL;
-    FR = parsed.VehicleData.current_rpms.FR;
-    RL = parsed.VehicleData.current_rpms.RL;
-    RR = parsed.VehicleData.current_rpms.RR;
+    FL = parsed.VehicleData.current_rpms.FL.Data;
+    FR = parsed.VehicleData.current_rpms.FR.Data;
+    RL = parsed.VehicleData.current_rpms.RL.Data;
+    RR = parsed.VehicleData.current_rpms.RR.Data;
     
     % extract timestamps and calculate sample intervals
-    timestamps = FL(:,1);
+    timestamps = parsed.VehicleData.current_rpms.FL.Timestamp;
     sample_intervals = diff(timestamps);
 
     % calculate the average of rpm of each wheel
-    avg_motor_rpms = mean([FL(:,2), FR(:,2), RL(:,2), RR(:,2)], 2);
+    avg_motor_rpms = mean([FL, FR, RL, RR], 2);
     avg_wheel_rpms = avg_motor_rpms / GEAR_RATIO;
     
     % convert RPM to linear speed
@@ -31,5 +31,5 @@ function result = meters_travelled(filePath)
     
     % return
     result.type = 'text';
-    result.result = total_distance;
+    result.result = num2str(total_distance);
 end
