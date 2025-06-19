@@ -1,2 +1,2 @@
-max_bms_temp.m
-max_motor_temp_plus_random_num.m
+max_cell_temp.m
+max_cell_temp_plus_random_num.m 
