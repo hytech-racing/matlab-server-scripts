@@ -1,8 +1,10 @@
 function result = battery_discharge_percentage(filePath)
     parsed = parse(filePath);
-    charge_percentage = parsed.state_of_charge.charge_percentage;
-    start = charge_percentage(1,2);
-    stop = charge_percentage(end, 2);
+    charge_percentage = parsed.ACUAllData.SoC.Data;
+    start = charge_percentage(1);
+    stop = charge_percentage(end);
     diff = start - stop;
-    result = jsonencode(struct("battery_discharge_percentage", diff));
+
+    result.type = 'text';
+    result.result = num2str(diff);
 end
