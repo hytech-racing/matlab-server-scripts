@@ -68,7 +68,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: copy ctf file
-        run: scp -P 2222 v1.ctf hytech@10.8.0.1:/mps_data/mps_workspace/Instances/mps_3/auto_deploy
+        run: scp -P 2222 *.ctf hytech@10.8.0.1:/mps_data/mps_workspace/Instances/mps_3/auto_deploy
       - name: add mps to known hosts
         run: ssh-keyscan -H ${{ secrets.MPS_SERVER_IP }} > ~/.ssh/known_hosts
       - name: copy file to mps auto deploy directory
